@@ -7,7 +7,6 @@
 </div>
 
 <div class="alerts d-none">
-
 </div>
 
     {{-- data-target =  --}}
@@ -198,6 +197,11 @@
                         $("#createArticleModal").modal("hide");
                         $(".articles").append("<tr class=article" + data.articleID + " deleted><td>"+ data.articleID +"</td><td>"+ data.articleTitle +"</td><td>"+ data.articleDescription +"</td><td>"+ data.articleType +"</td><td><button type='button' class='btn btn-success show-article' data-articleid='"+data.articleID+"'>Show</button><button type='button' class='btn btn-secondary update-article' data-articleid='"+data.articleID +"'>Update</button></td><td><input class='delete-article' type='checkbox' name='articleDelete[]' value='"+data.articleID +"'/></td></tr>");
                         $(".alerts").append("<div class='alert alert-success'>"+ data.success +"</div");
+                            window.setTimeout(function() {
+                $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+                $(this).remove();
+                });
+                }, 5000);
                         $("#articleTitle").val('');
                         $("#articleDescription").val('');
                     } else {
@@ -311,6 +315,7 @@
                 });
             })
 
+
         // $(".delete-article").click(function(){
             // $(this).parents('.deleted').remove();
 
@@ -328,6 +333,17 @@
             //mes isvedem sekmes nesekmes zinute
 
         // });
+//         $(document).ready(function () {
+
+//  window.setTimeout(function() {
+//      $(".alerts").fadeTo(1000, 0).slideUp(1000, function(){
+//          $(this).remove();
+//      });
+//  }, 5000);
+
+//  });
     });
+
+
 </script>
 @endsection
