@@ -197,11 +197,11 @@
                         $("#createArticleModal").modal("hide");
                         $(".articles").append("<tr class=article" + data.articleID + " deleted><td>"+ data.articleID +"</td><td>"+ data.articleTitle +"</td><td>"+ data.articleDescription +"</td><td>"+ data.articleType +"</td><td><button type='button' class='btn btn-success show-article' data-articleid='"+data.articleID+"'>Show</button><button type='button' class='btn btn-secondary update-article' data-articleid='"+data.articleID +"'>Update</button></td><td><input class='delete-article' type='checkbox' name='articleDelete[]' value='"+data.articleID +"'/></td></tr>");
                         $(".alerts").append("<div class='alert alert-success'>"+ data.success +"</div");
-                            window.setTimeout(function() {
-                $(".alert").fadeTo(500, 0).slideUp(1000, function(){
-                $(this).remove();
-                });
-                }, 5000);
+        window.setTimeout(function() {
+        $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+        $(this).remove();
+        });
+        }, 5000);
                         $("#articleTitle").val('');
                         $("#articleDescription").val('');
                     } else {
@@ -270,7 +270,12 @@
                     if($.isEmptyObject(data.error)) {
                         $(".invalid-feedback").css("display", 'none');
                         $("#editArticleModal").modal("hide");
-                        $(".alerts").append("<div class='alert alert-success'>"+ data.success +"</div");
+                        $(".alerts").append("<div class='alert alert-success'>"+ data.success +"</div>");
+        window.setTimeout(function() {
+        $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+        $(this).remove();
+        });
+        }, 5000);
                     } else {
                         $(".invalid-feedback").css("display", 'none');
                         $.each(data.error, function(key, error){
@@ -287,7 +292,6 @@
         $(document).ready(function() {
             $("#delete-selected").click(function() {
                 var checkedArticles = [];
-                // foreach(delete-company as $company )
                 $.each( $(".delete-article:checked"), function( key, article) {
                     // console.log( company.value );
                     checkedArticles[key] = article.value;
@@ -301,49 +305,22 @@
                         $(".alerts").toggleClass("d-none");
                         for(var i=0; i<data.messages.length; i++) {
                             $(".alerts").append("<div class='alert alert-"+data.errorsuccess[i] + "'><p>"+ data.messages[i] + "</p></div>")
-
-                            //danger arba success
+                            window.setTimeout(function() {
+                            $(".alert").fadeTo(500, 0).slideUp(1000, function(){
+                            $(this).remove();
+                            });
+                            }, 5000);
                             var id = data.success[i];
                             if(data.errorsuccess[i] == "success") {
                                 $(".article"+id ).remove();
-                                // alert(data.success);
                             }
                         }
-
-                        // console.log(data.messages);
                     }
                 });
             })
 
-
-        // $(".delete-article").click(function(){
-            // $(this).parents('.deleted').remove();
-
-            // $(this).prop("checked") = true;
-
-            // console.log(company_id);
-
-            //1. ka mes siunciam ajax? ne vienas company_id , o tiek kiek pazymejom
-            //2. mes i ajax uzklausa turime paduoti masyva, [1,5,7], skaiciai yra pazymetu kompaniju ID
-
-
-
-            //nusiuntem ajax uzklausa su company id
-            //ajax istryne company
-            //mes isvedem sekmes nesekmes zinute
-
-        // });
-//         $(document).ready(function () {
-
-//  window.setTimeout(function() {
-//      $(".alerts").fadeTo(1000, 0).slideUp(1000, function(){
-//          $(this).remove();
-//      });
-//  }, 5000);
-
-//  });
     });
 
-
 </script>
+
 @endsection

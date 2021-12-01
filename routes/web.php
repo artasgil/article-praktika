@@ -38,11 +38,11 @@ Route::prefix('article')->group(function () {
 Route::prefix('type')->group(function () {
 
     Route::get('','TypeController@index')->name('type.index');
-    Route::post('storeAjax', 'TypeController@storeAjax')->name('type.storeAjax');
+    Route::post('storeAjaxx', 'TypeController@storeAjax')->name('type.storeAjax');
     Route::get('editAjax/{type}', 'TypeController@editAjax')->name('type.editAjax');
     Route::post('updateAjax/{type}', 'TypeController@updateAjax')->name('type.updateAjax');
     Route::post('deleteAjax/{type}', 'TypeController@destroyAjax' )->name('type.destroyAjax');
     Route::get('showAjax/{type}', 'TypeController@showAjax')->name('type.showAjax');
-
+    Route::post('destroySelected', 'TypeController@destroySelected')->name('type.destroySelected');
 
 });
