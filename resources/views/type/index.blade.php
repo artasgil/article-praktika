@@ -368,7 +368,18 @@
                         $(".types").css("display", "none");
                         $(".types tbody").html("");
                         $(".search-alert").html("");
-                        window.alert("No results found");
+                        window.alert(data.error);
+                        $(".search-alert").append(data.error);
+                        $("#search-field").val('');
+                        $(".types").css("display", "table");
+
+
+                        // if(data.error) {
+                        //     $("#search-field").val('');
+                        //     window.alert(data.error);
+                        //     createTable(data.types);
+                        //     $(".types").css("display", 'table');
+                        //      }
                         // $(".search-alert").append(data.error);
 
                         // console.log(data.error)
