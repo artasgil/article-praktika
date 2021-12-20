@@ -9,14 +9,46 @@
 <div class="alerts d-none">
 </div>
 
-    {{-- data-target =  --}}
+
+<div class="search-form row">
+    <div class="col-md-8">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createTypeModal">
         Create New Type
     </button>
 
 
     <button class="btn btn-primary" id="delete-selected">Delete selected</button>
+</div>
+    <div class="col-md-4">
+        Search: <input type="text" class="form-control" id="search-field" name="search-field"/>
+        {{-- <button type="button" class="btn btn-primary" id="search-button" >Search</button> --}}
+        <span class="search-feedback">
+        </span>
+        <div class="search-alert">
+        </div>
+    </div>
+</div>
 
+
+
+
+
+    <div class="sort-form row">
+        <div class="col-md-4">
+            <select class="form-control" id="sortCol" name="sortCol">
+                <option value='id' selected="true">ID</option>
+                <option value='title'>Title</option>
+                <option value='description'>Description</option>
+            </select>
+
+            <select class="form-control" id="sortOrder" name="sortOrder">
+                <option value='ASC' selected="true">ASC</option>
+                <option value='DESC'>DESC</option>
+            </select>
+
+        <button type="button" id="filterTypes" class="btn btn-primary">Filter Types</button>
+        </div>
+        </div>
 <table class="types table table-striped">
     <tr>
         <th>ID</th>
@@ -29,10 +61,10 @@
 
     @foreach ($types as $type)
         <tr class="type{{$type->id}}">
-            <td>{{$type->id}}</td>
-            <td>{{$type->title}}</td>
-            <td>{{$type->description}}</td>
-            <td>{{$type->articleTypes->count()}}</td>
+            <td class="colTypeId">{{$type->id}}</td>
+            <td class="colTypeTitle">{{$type->title}}</td>
+            <td class="colTypeDescription">{{$type->description}}</td>
+            <td class="colTypeRecords">{{$type->articleTypes->count()}}</td>
             <td>
                 <button type="button" class="btn btn-success show-type" data-typeid='{{$type->id}}'>Show</button>
                 <button type="button" class="btn btn-secondary update-type" data-typeid='{{$type->id}}'>Update</button>
@@ -243,6 +275,9 @@
         $(this).remove();
         });
         }, 5000);
+                        $(".type"+ typeid + " .colTypeTitle").html(data.typeTitle);
+                        $(".type"+ typeid + " .colTypeDescription").html(data.typeDescription);
+                        // $(".type"+ typeid + " .colTypeRecords").html(data.typeRecord);
                     } else {
                         $(".invalid-feedback").css("display", 'none');
                         $.each(data.error, function(key, error){
@@ -287,6 +322,83 @@
 
     });
 
+    function createTable(types){
+        $(".types tbody").html("");
+        $(".types tbody").append("<tr><th>ID</th><th>Title</th><th>Description</th><th>Records</th><th>Actions</th><th><input type='checkbox' id='select_all_invoices' onclick='selectAll()'></th></tr>");
+        $.each(types, function(key, type){
+                var typeRow = "<tr class='type"+ type.id +"'>";
+                typeRow += "<td class='colTypeId'>"+ type.id +"</td>";
+                typeRow += "<td class='colTypeTitle'>"+ type.title +"</td>";
+                typeRow += "<td class='colTypeDescription'>"+ type.description +"</td>";
+                typeRow += "<td class='colTypeRecords'>"+ type.typeRecord+"</td>";
+                typeRow += "<td>";
+                typeRow += "<button type='button' class='btn btn-success show-type' data-typeid='"+ type.id +"'>Show</button>";
+                typeRow += "<button type='button' class='btn btn-secondary update-type' data-typeid='"+ type.id +"'>Update</button>";
+                typeRow += "</td>";
+                typeRow += "<td>";
+                typeRow += "<input id='delete' class='delete-type check_invoice' type='checkbox'  name='typeDelete[]'' value='"+ type.id + "'/>"
+                typeRow += "</td>";
+                typeRow += "</tr>";
+                $(".types tbody").append(typeRow);
+        });
+    }
+
+    $(document).on('input', '#search-field', function() {
+
+
+        var searchField = $("#search-field").val();
+        var searchFieldCount = searchField.length;
+        if(searchFieldCount != 0 && searchFieldCount < 3) {
+            $(".search-feedback").css('display', 'block');
+            $(".search-feedback").html("Min 3 symbols");
+        } else {
+            $(".search-feedback").css('display', 'none');
+        $.ajax({
+                type: 'GET',
+                url: '/type/searchAjax/',
+                data: {searchField: searchField },
+                success: function(data) {
+                    if($.isEmptyObject(data.error)) {
+                        console.log(data.success);
+                        $(".types").css("display", 'table');
+                        $(".search-alert").html("");
+                        $(".search-alert").html(data.success);
+                        createTable(data.types);
+                    } else {
+                        $(".types").css("display", "none");
+                        $(".types tbody").html("");
+                        $(".search-alert").html("");
+                        window.alert("No results found");
+                        // $(".search-alert").append(data.error);
+
+                        // console.log(data.error)
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '#filterTypes', function() {
+        var sortCol = $("#sortCol").val();
+        var sortOrder = $("#sortOrder").val();
+
+        $.ajax({
+                type: 'GET',
+                url: '/type/filterAjax/',
+                data: {sortCol: sortCol, sortOrder: sortOrder},
+                success: function(data) {
+                    if($.isEmptyObject(data.error)) {
+                        // console.log(data)
+                        createTable(data.types);
+                        // console.log(data.type_id);
+                    } else {
+                        console.log(data.error)
+                    }
+                }
+
+            });
+    });
+
 </script>
 <script>
  function selectAll() {
@@ -298,5 +410,5 @@
             check_invoice.checked = blnChecked;
         }
     }
-    </script>
+</script>
 @endsection

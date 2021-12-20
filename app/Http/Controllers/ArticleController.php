@@ -39,6 +39,10 @@ class ArticleController extends Controller
 
         $validator = Validator::make($input, $rules);
 
+        $sortCol = $request->sortCol;
+        $sortOrder = $request->sortOrder;
+        $type_id = $request->type_id;
+
         if($validator->passes()) {
             $article->title = $request->articleTitle;
             $article->description = $request->articleDescription;
@@ -46,12 +50,19 @@ class ArticleController extends Controller
 
             $article->save();
 
+            if($type_id == 'all') {
+                $articles = Article::orderBy($sortCol, $sortOrder)->get();
+            } else {
+                $articles = Article::where('type_id', $type_id)->orderBy($sortCol, $sortOrder)->get();
+            }
+
             $success = [
                 'success' => 'Article added successfully',
                 'articleID' => $article->id,
                 'articleTitle' => $article->title,
                 'articleDescription' => $article->description,
-                'articleType' => $article->articleType->title
+                'articleType' => $article->articleType->title,
+                'articles' => $articles
             ];
 
             $success_json = response()->json($success);

@@ -238,4 +238,82 @@ class TypeController extends Controller
         return $success_json;
 
     }
+
+    public function searchAjax(Request $request) {
+
+        $searchValue = $request->searchField;
+
+
+        $types = Type::query()
+            ->where('title', 'like', "%{$searchValue}%")
+            ->orWhere('description', 'like', "%{$searchValue}%")
+            ->get();
+
+
+            foreach ($types as $type) {
+                $type['typeRecord'] = $type->articleTypes->count();
+            }
+
+        if($searchValue == '' || count($types)!= 0) {
+
+            $success = [
+                'success' => 'Found '.count($types),
+                'types' => $types
+            ];
+
+            $success_json = response()->json($success);
+
+
+            return $success_json; //yra musu sekmes pranesimas
+        }
+
+        $error = [
+            'error' => 'No results are found'
+        ];
+
+        $errors_json = response()->json($error);
+
+        return $errors_json;
+
+    }
+
+    public function filterAjax(Request $request) {
+
+        $sortCol = $request->sortCol;
+        //Rikiavimo tvarka
+        $sortOrder = $request->sortOrder;
+
+
+        $types = Type::orderBy($sortCol, $sortOrder)->get();
+
+
+        foreach ($types as $type) {
+            $type['typeRecord'] = $type->articleTypes->count();
+        }
+
+        $types_count = count($types);
+
+        if ($types_count == 0) {
+            $error = [
+                'error' => 'There are no types',
+            ];
+
+            $error_json = response()->json($error);
+            return $error_json;
+        }
+
+        $success = [
+            'success' => 'Types filtered successfuly',
+            'types' => $types
+        ];
+
+        $success_json = response()->json($success);
+
+        return $success_json;
+
+
+
+    }
+
+
 }

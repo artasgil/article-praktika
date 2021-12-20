@@ -66,10 +66,10 @@
     </tr>
     @foreach ($articles as $article)
         <tr class="article{{$article->id}} deleted">
-            <td>{{$article->id}}</td>
-            <td>{{$article->title}}</td>
-            <td>{{$article->description}}</td>
-            <td>{{$article->articleType->title}}</td>
+            <td class="colArticleId">{{$article->id}}</td>
+            <td class="colArticleTitle">{{$article->title}}</td>
+            <td class= "colArticleDescription">{{$article->description}}</td>
+            <td class="colArticleType">{{$article->articleType->title}}</td>
             <td>
                 <button type="button" class="btn btn-success show-article" data-articleid='{{$article->id}}'>Show</button>
                 <button type="button" class="btn btn-secondary update-article" data-articleid='{{$article->id}}'>Update</button>
@@ -225,15 +225,19 @@
         var articleTitle = $("#articleTitle").val();
         var articleDescription = $("#articleDescription").val();
         var articleType = $("#articleType").val();
+        var sortCol = $("#sortCol").val();
+        var sortOrder = $("#sortOrder").val();
+        var type_id = $("#type_id").val();
+        console.log(sortOrder);
         $.ajax({
                 type: 'POST',
                 url: '{{route("article.storeAjax")}}',
-                data: {articleTitle:articleTitle, articleDescription:articleDescription,articleType:articleType},
+                data: {articleTitle:articleTitle, articleDescription:articleDescription,articleType:articleType,sortCol:sortCol,sortOrder:sortOrder,type_id:type_id},
                 success: function(data) {
                     if($.isEmptyObject(data.error)) {
                         $(".invalid-feedback").css("display", 'none');
                         $("#createArticleModal").modal("hide");
-                        $(".articles").append("<tr class=article" + data.articleID + " deleted><td>"+ data.articleID +"</td><td>"+ data.articleTitle +"</td><td>"+ data.articleDescription +"</td><td>"+ data.articleType +"</td><td><button type='button' class='btn btn-success show-article' data-articleid='"+data.articleID+"'>Show</button><button type='button' class='btn btn-secondary update-article' data-articleid='"+data.articleID +"'>Update</button></td><td><input class='delete-article' type='checkbox' name='articleDelete[]' value='"+data.articleID +"'/></td></tr>");
+                        $(".articles").append("<tr class=article" + data.articleID + " deleted><td class='colArticleId'>"+ data.articleID +"</td><td class='colArticleTitle'>"+ data.articleTitle +"</td><td class='colArticleDescription'>"+ data.articleDescription +"</td><td class='colArticleType'>"+ data.articleType +"</td><td><button type='button' class='btn btn-success show-article' data-articleid='"+data.articleID+"'>Show</button><button type='button' class='btn btn-secondary update-article' data-articleid='"+data.articleID +"'>Update</button></td><td><input class='delete-article' type='checkbox' name='articleDelete[]' value='"+data.articleID +"'/></td></tr>");
                         $(".alerts").append("<div class='alert alert-success'>"+ data.success +"</div");
         window.setTimeout(function() {
         $(".alert").fadeTo(500, 0).slideUp(1000, function(){
@@ -314,6 +318,9 @@
         $(this).remove();
         });
         }, 5000);
+                        $(".article"+ articleid + " .colArticleTitle").html(data.articleTitle);
+                        $(".article"+ articleid + " .colArticleDescription").html(data.articleDescription);
+                        $(".article"+ articleid + " .colArticleType").html(data.articleType);
                     } else {
                         $(".invalid-feedback").css("display", 'none');
                         $.each(data.error, function(key, error){
@@ -367,7 +374,7 @@
                 articleRow += "<td class='colArticleId'>"+ article.id +"</td>";
                 articleRow += "<td class='colArticleTitle'>"+ article.title +"</td>";
                 articleRow += "<td class='colArticleDescription'>"+ article.description +"</td>";
-                articleRow += "<td class='colArticleArticleType'>"+ article.articleTitle +"</td>";
+                articleRow += "<td class='colArticleType'>"+ article.articleTitle +"</td>";
                 articleRow += "<td>";
                 articleRow += "<button type='button' class='btn btn-success show-article' data-articleid='"+ article.id +"'>Show</button>";
                 articleRow += "<button type='button' class='btn btn-secondary update-article' data-articleid='"+ article.id +"'>Update</button>";
@@ -381,6 +388,8 @@
     }
 
     $(document).on('input', '#search-field', function() {
+
+
         var searchField = $("#search-field").val();
         var searchFieldCount = searchField.length;
         if(searchFieldCount != 0 && searchFieldCount < 3) {
