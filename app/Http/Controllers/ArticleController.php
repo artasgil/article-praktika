@@ -251,4 +251,88 @@ class ArticleController extends Controller
         return $success_json;
 
     }
+
+    public function searchAjax(Request $request) {
+
+        $searchValue = $request->searchField;
+
+
+        $articles = Article::query()
+            ->where('title', 'like', "%{$searchValue}%")
+            ->orWhere('description', 'like', "%{$searchValue}%")
+            ->get();
+        //eilute yra klientas, kiekvienas stulpelis yra informacija apie klienta
+
+        foreach ($articles as $article) {
+            $article['articleTitle'] = $article->articleType->title;
+        }
+
+
+        if($searchValue == '' || count($articles)!= 0) {
+
+            $success = [
+                'success' => 'Found '.count($articles),
+                'articles' => $articles
+            ];
+
+            $success_json = response()->json($success);
+
+
+            return $success_json; //yra musu sekmes pranesimas
+        }
+
+        $error = [
+            'error' => 'No results are found'
+        ];
+
+        $errors_json = response()->json($error);
+
+        return $errors_json;
+
+    }
+
+    public function filterAjax(Request $request) {
+
+        $type_id = $request->type_id;
+
+        $sortCol = $request->sortCol;
+        //Rikiavimo tvarka
+        $sortOrder = $request->sortOrder;
+
+
+        if($type_id == 'all') {
+            $articles = Article::orderBy($sortCol, $sortOrder)->get();
+        } else {
+            $articles = Article::where('type_id', $type_id)->orderBy($sortCol, $sortOrder)->get();
+        }
+
+        foreach ($articles as $article) {
+            $article['articleTitle'] = $article->articleType->title;
+        }
+
+        $articles_count = count($articles);
+
+        if ($articles_count == 0) {
+            $error = [
+                'error' => 'There are no articles',
+            ];
+
+            $error_json = response()->json($error);
+            return $error_json;
+        }
+
+        $success = [
+            'success' => 'Articles filtered successfuly',
+            'articles' => $articles
+        ];
+
+        $success_json = response()->json($success);
+
+        return $success_json;
+
+
+
+    }
 }
+
+

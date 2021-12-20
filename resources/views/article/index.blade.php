@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+
 <div class="container">
 
 <div class="alerts">
@@ -9,13 +11,50 @@
 <div class="alerts d-none">
 </div>
 
+
+
     {{-- data-target =  --}}
+
+    <div class="search-form row">
+    <div class="col-md-8">
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createArticleModal">
         Create New Article
     </button>
-
     <button class="btn btn-primary" id="delete-selected">Delete</button>
+</div>
+    <div class="col-md-4">
+        Search: <input type="text" class="form-control" id="search-field" name="search-field"/>
+        {{-- <button type="button" class="btn btn-primary" id="search-button" >Search</button> --}}
+        <span class="search-feedback">
+        </span>
+        <div class="search-alert">
+        </div>
+        </div>
+</div>
+<div class="sort-form row">
+    <div class="col-md-4">
+    {{-- 2 selectus: pasirenkame stulpeli, kitame rikiavimo tvarka --}}
+        <select class="form-control" id="sortCol" name="sortCol">
+            <option value='id' selected="true">ID</option>
+            <option value='title'>Title</option>
+            <option value='description'>Description</option>
+            <option value='type_id'>Article type</option>
+        </select>
 
+        <select class="form-control" id="sortOrder" name="sortOrder">
+            <option value='ASC' selected="true">ASC</option>
+            <option value='DESC'>DESC</option>
+        </select>
+
+        <select class="form-control" id="type_id" name="type_id">
+            <option value="all" selected="true"> Show All </option>
+        @foreach ($types as $type)
+            <option value='{{$type->id}}'>{{$type->title}}</option>
+        @endforeach
+        </select>
+    <button type="button" id="filterArticles" class="btn btn-primary">Filter Articles</button>
+    </div>
+    </div>
 <table class="articles table table-striped">
     <tr>
         <th>ID</th>
@@ -25,7 +64,6 @@
         <th>Actions</th>
         <th></th>
     </tr>
-
     @foreach ($articles as $article)
         <tr class="article{{$article->id}} deleted">
             <td>{{$article->id}}</td>
@@ -320,6 +358,84 @@
             })
 
     });
+
+    function createTable(articles){
+        $(".articles tbody").html("");
+        $(".articles tbody").append("<tr><th>ID</th><th>Title</th><th>Description</th><th>Article type</th><th>Actions</th><th></th></tr>");
+        $.each(articles, function(key, article){
+                var articleRow = "<tr class='article"+ article.id +"'>";
+                articleRow += "<td class='colArticleId'>"+ article.id +"</td>";
+                articleRow += "<td class='colArticleTitle'>"+ article.title +"</td>";
+                articleRow += "<td class='colArticleDescription'>"+ article.description +"</td>";
+                articleRow += "<td class='colArticleArticleType'>"+ article.articleTitle +"</td>";
+                articleRow += "<td>";
+                articleRow += "<button type='button' class='btn btn-success show-article' data-articleid='"+ article.id +"'>Show</button>";
+                articleRow += "<button type='button' class='btn btn-secondary update-article' data-articleid='"+ article.id +"'>Update</button>";
+                articleRow += "</td>";
+                articleRow += "<td>";
+                articleRow += "<input id='delete' class='delete-article' type='checkbox'  name='articleDelete[]'' value='"+ article.id + "'/>"
+                articleRow += "</td>";
+                articleRow += "</tr>";
+                $(".articles tbody").append(articleRow);
+        });
+    }
+
+    $(document).on('input', '#search-field', function() {
+        var searchField = $("#search-field").val();
+        var searchFieldCount = searchField.length;
+        if(searchFieldCount != 0 && searchFieldCount < 3) {
+            $(".search-feedback").css('display', 'block');
+            $(".search-feedback").html("Min 3 symbols");
+        } else {
+            $(".search-feedback").css('display', 'none');
+        $.ajax({
+                type: 'GET',
+                url: '/article/searchAjax/',
+                data: {searchField: searchField },
+                success: function(data) {
+                    if($.isEmptyObject(data.error)) {
+                        console.log(data.success);
+                        $(".articles").css("display", 'table');
+                        $(".search-alert").html("");
+                        $(".search-alert").html(data.success);
+                        createTable(data.articles);
+                    } else {
+                        $(".articles").css("display", "none");
+                        $(".articles tbody").html("");
+                        $(".search-alert").html("");
+                        $(".search-alert").append(data.error);
+
+                        // console.log(data.error)
+                    }
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '#filterArticles', function() {
+        var sortCol = $("#sortCol").val();
+        var sortOrder = $("#sortOrder").val();
+        var type_id = $("#type_id").val();
+
+        $.ajax({
+                type: 'GET',
+                url: '/article/filterAjax/',
+                data: {sortCol: sortCol, sortOrder: sortOrder, type_id: type_id },
+                success: function(data) {
+                    if($.isEmptyObject(data.error)) {
+                        // console.log(data)
+                        createTable(data.articles);
+                        // console.log(data.type_id);
+                    } else {
+                        console.log(data.error)
+                    }
+                }
+
+            });
+    });
+
+
+
 
 </script>
 

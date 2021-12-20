@@ -30,6 +30,10 @@ Route::prefix('article')->group(function () {
     Route::post('deleteAjax/{article}', 'ArticleController@destroyAjax' )->name('article.destroyAjax');
     Route::get('showAjax/{article}', 'ArticleController@showAjax')->name('article.showAjax');
     Route::post('destroySelected', 'ArticleController@destroySelected')->name('article.destroySelected');
+    Route::get('searchAjax', 'ArticleController@searchAjax')->name('article.searchAjax');
+    Route::get('filterAjax', 'ArticleController@filterAjax') ->name('article.filterAjax');
+
+
 
 
 
