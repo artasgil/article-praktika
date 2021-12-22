@@ -343,14 +343,16 @@
         });
     }
 
+    var x = 0;
     $(document).on('input', '#search-field', function() {
 
-
+        x++;
         var searchField = $("#search-field").val();
         var searchFieldCount = searchField.length;
         if(searchFieldCount != 0 && searchFieldCount < 3) {
             $(".search-feedback").css('display', 'block');
             $(".search-feedback").html("Min 3 symbols");
+          //  x = 0;
         } else {
             $(".search-feedback").css('display', 'none');
         $.ajax({
@@ -364,26 +366,32 @@
                         $(".search-alert").html("");
                         $(".search-alert").html(data.success);
                         createTable(data.types);
+                        x=0;
                     } else {
                         $(".types").css("display", "none");
                         $(".types tbody").html("");
                         $(".search-alert").html("");
-                        window.alert(data.error);
+                        if(x> 0) {
+                            window.alert(data.error);
+                            // createTable(data.types);
+                            x=0;
+                        }
                         $(".search-alert").append(data.error);
                         $("#search-field").val('');
                         $(".types").css("display", "table");
+                        createTable(data.types);
 
 
-                        // if(data.error) {
-                        //     $("#search-field").val('');
-                        //     window.alert(data.error);
-                        //     createTable(data.types);
-                        //     $(".types").css("display", 'table');
-                        //      }
-                        // $(".search-alert").append(data.error);
-
-                        // console.log(data.error)
-                    }
+                        //if(data.error) {
+                      //      $("#search-field").val('');
+                      //      window.alert(data.error);
+                      //      createTable(data.types);
+                      //      $(".types").css("display", 'table');
+                      //       }
+                      //  $(".search-alert").append(data.error);
+//
+                        //console.log(data.error)
+                   }
                 }
             });
         }

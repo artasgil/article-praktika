@@ -267,8 +267,13 @@ class TypeController extends Controller
             return $success_json; //yra musu sekmes pranesimas
         }
 
+        $types = Type::all();
+        foreach ($types as $type) {
+            $type['typeRecord'] = $type->articleTypes->count();
+        }
         $error = [
-            'error' => 'No results are found'
+            'error' => 'No results are found',
+            'types' => $types
         ];
 
         $errors_json = response()->json($error);
